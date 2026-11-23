@@ -3,7 +3,7 @@ from datetime import date, datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy 
 
-db = SQLAlchemy
+db = SQLAlchemy()
 
 CATEGORIES = [ "produce", "dairy", "meat", "grains", "canned", "frozen", "snacks", "drinks", "other"]
 
