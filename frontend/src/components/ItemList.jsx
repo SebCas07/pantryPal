@@ -1,4 +1,4 @@
-function ItemList({ items = [], onEdit, onDelete }) {
+export default function ItemList({ items, onEdit }) {
   if (items.length === 0) {
     return <p className="item-list__empty">Your pantry is empty.</p>
   }
@@ -13,7 +13,7 @@ function ItemList({ items = [], onEdit, onDelete }) {
             <th scope="col">Category</th>
             <th scope="col">Expiration date</th>
             <th scope="col">Status</th>
-            {(onEdit || onDelete) && <th scope="col">Actions</th>}
+            <th aria-label="Actions" />
           </tr>
         </thead>
         <tbody>
@@ -33,28 +33,9 @@ function ItemList({ items = [], onEdit, onDelete }) {
                   {item.status.replaceAll('_', ' ')}
                 </span>
               </td>
-              {(onEdit || onDelete) && (
-                <td className="item-list__actions">
-                  {onEdit && (
-                    <button
-                      type="button"
-                      onClick={() => onEdit(item)}
-                      aria-label={`Edit ${item.name}`}
-                    >
-                      Edit
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      type="button"
-                      onClick={() => onDelete(item.id)}
-                      aria-label={`Delete ${item.name}`}
-                    >
-                      Delete
-                    </button>
-                  )}
-                </td>
-              )}
+              <td className="row-actions">
+                <button className="secondary" onClick={() => onEdit(item)}>Edit</button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -62,5 +43,3 @@ function ItemList({ items = [], onEdit, onDelete }) {
     </div>
   )
 }
-
-export default ItemList
