@@ -172,6 +172,27 @@ button:disabled {
   color: var(--color-danger);
 }
 
+.use-soon {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.use-soon li {
+  margin: 4px 0;
+}
+
+.use-soon li.expired {
+  color: #b3261e;
+}
+
+.use-soon li.use_soon {
+  color: #c77700;
+}
+
+.use-soon strong {
+  color: #1f2421;
+}
+
 .item-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
