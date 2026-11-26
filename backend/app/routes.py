@@ -64,12 +64,38 @@ def categoies():
     return jsonify (CATEGORIES)
 
 @api.get("/items")
-def list_items(): 
-    #items with a dte first (doonest first), then undated items by name. 
-    items = Item.query.order_by(
-        Item.expiration_date.is_(None), Item.expiration_date, Item.name       
+def list_items():
+    """List items, optionally filtered.
+
+    Query params (all optional, combinable):
+      q        - case-insensitive substring match on name
+      category - exact category, e.g. "dairy"
+      status   - expiry status: expired, use_soon, this_week, fresh, none
+    """
+    query = Item.query
+
+    search = (request.args.get("q") or "").strip()
+    if search:
+        query = query.filter(Item.name.ilike(f"%{search}%"))
+
+    category = (request.args.get("category") or "").strip().lower()
+    if category:
+        if category not in CATEGORIES:
+            return jsonify(errors={"category": f"Unknown category '{category}'."}), 400
+        query = query.filter(Item.category == category)
+
+    # Items with a date first (soonest first), then undated items by name.
+    items = query.order_by(
+        Item.expiration_date.is_(None), Item.expiration_date, Item.name
     ).all()
-    return jsonify ([i.to_dict(_use_soon_days()) for i in items])
+    results = [i.to_dict(_use_soon_days()) for i in items]
+
+    # Status depends on today's date, so filter it after computing.
+    status = (request.args.get("status") or "").strip()
+    if status:
+        results = [item for item in results if item["status"] == status]
+
+    return jsonify(results)
 
 @api.post("/items")
 def create_item(): 
