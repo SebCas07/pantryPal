@@ -86,6 +86,25 @@ function App() {
     }
   }
 
+  async function handleDelete(id) {
+    setIsSubmitting(true)
+    setError('')
+    setMessage('')
+
+    try {
+      await api.deleteItem(id)
+      if (editing?.id === id) {
+        setEditing(null)
+      }
+      await refresh()
+      setMessage('Item removed from your pantry.')
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <main className="pantry-app">
       <header className="pantry-app__header">
@@ -145,6 +164,7 @@ function App() {
               setEditing(item)
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
+            onDelete={handleDelete}
           />
         )}
       </section>
