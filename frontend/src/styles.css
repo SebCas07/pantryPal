@@ -351,7 +351,7 @@ button:disabled {
   background: #7e2828;
 }
 
-.item-list__empty {
+.empty {
   margin: 0;
   padding: 1.25rem;
   border: 1px dashed #cbd8cd;
