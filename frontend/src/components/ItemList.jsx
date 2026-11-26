@@ -1,4 +1,4 @@
-export default function ItemList({ items, onEdit }) {
+export default function ItemList({ items, onEdit, onDelete }) {
   if (items.length === 0) {
     return <p className="item-list__empty">Your pantry is empty.</p>
   }
@@ -34,7 +34,20 @@ export default function ItemList({ items, onEdit }) {
                 </span>
               </td>
               <td className="row-actions">
-                <button className="secondary" onClick={() => onEdit(item)}>Edit</button>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => onEdit(item)}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="danger"
+                  onClick={() => onDelete(item.id)}
+                >
+                  Remove
+                </button>
               </td>
             </tr>
           ))}

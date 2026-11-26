@@ -255,6 +255,19 @@ button:disabled {
   background: #f1f5f1;
 }
 
+.row-actions .danger {
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+  border-color: #9f3434;
+  background: #9f3434;
+  font-size: 0.85rem;
+}
+
+.row-actions .danger:hover:not(:disabled) {
+  border-color: #7e2828;
+  background: #7e2828;
+}
+
 .item-list__empty {
   margin: 0;
   padding: 1.25rem;
