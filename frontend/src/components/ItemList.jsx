@@ -1,8 +1,19 @@
 import { STATUS_LABELS, expiryText } from './status.js'
 
-export default function ItemList({ items, onEdit, onDelete }) {
+export default function ItemList({
+  items,
+  filtered = false,
+  onEdit,
+  onDelete,
+}) {
   if (items.length === 0) {
-    return <p className="item-list__empty">Your pantry is empty.</p>
+    return (
+      <p className="empty">
+        {filtered
+          ? 'No items match these filters.'
+          : 'Your pantry is empty. Add your first item above.'}
+      </p>
+    )
   }
 
   return (

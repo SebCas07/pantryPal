@@ -30,8 +30,16 @@ export function getCategories() {
   return request('/categories')
 }
 
+export function listItems(filters = {}) {
+  // filters: { q, category, status }. Empty values are skipped.
+  const params = new URLSearchParams(
+    Object.entries(filters).filter(([, value]) => value),
+  ).toString()
+  return request(`/items${params ? `?${params}` : ''}`)
+}
+
 export function getItems() {
-  return request('/items')
+  return listItems()
 }
 
 export function getItem(itemId) {
@@ -50,6 +58,10 @@ export function deleteItem(itemId) {
   return request(`/items/${itemId}`, { method: 'DELETE' })
 }
 
-export function getDashboard() {
+export function dashboard() {
   return request('/dashboard')
+}
+
+export function getDashboard() {
+  return dashboard()
 }

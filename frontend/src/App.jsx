@@ -1,62 +1,47 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import * as api from './api'
 import Dashboard from './components/Dashboard.jsx'
+import FilterBar from './components/FilterBar.jsx'
 import ItemForm from './components/ItemForm'
 import ItemList from './components/ItemList'
-
-async function fetchPantryData() {
-  const [items, dashboard, categories] = await Promise.all([
-    api.getItems(),
-    api.getDashboard(),
-    api.getCategories(),
-  ])
-  return { items, dashboard, categories }
-}
 
 function App() {
   const [items, setItems] = useState([])
   const [dashboard, setDashboard] = useState(null)
   const [categories, setCategories] = useState([])
   const [editing, setEditing] = useState(null)
+  const [filters, setFilters] = useState({ q: '', category: '', status: '' })
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
-  useEffect(() => {
-    let isMounted = true
-
-    fetchPantryData()
-      .then((data) => {
-        if (isMounted) {
-          setItems(data.items)
-          setDashboard(data.dashboard)
-          setCategories(data.categories)
-        }
-      })
-      .catch((requestError) => {
-        if (isMounted) {
-          setError(requestError.message)
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false)
-        }
-      })
-
-    return () => {
-      isMounted = false
+  const refresh = useCallback(async () => {
+    try {
+      const [list, dash, categoryList] = await Promise.all([
+        api.listItems(filters),
+        api.dashboard(),
+        api.getCategories(),
+      ])
+      setItems(list)
+      setDashboard(dash)
+      setCategories(categoryList)
+      setError('')
+    } catch (requestError) {
+      setError(
+        requestError instanceof TypeError
+          ? "Can't reach the PantryPal API. Is the backend running?"
+          : requestError.message,
+      )
+    } finally {
+      setIsLoading(false)
     }
-  }, [])
+  }, [filters])
 
-  async function refresh() {
-    const data = await fetchPantryData()
-    setItems(data.items)
-    setDashboard(data.dashboard)
-    setCategories(data.categories)
-    setError('')
-  }
+  useEffect(() => {
+    const timer = setTimeout(refresh, 250)
+    return () => clearTimeout(timer)
+  }, [filters, refresh])
 
   async function handleSave(item) {
     setIsSubmitting(true)
@@ -134,12 +119,21 @@ function App() {
       </section>
 
       <section className="pantry-app__items" aria-labelledby="items-title">
-        <h2 id="items-title">Pantry items</h2>
+        <h2 id="items-title">
+          Pantry ({items.length}
+          {filters.q || filters.category || filters.status ? ' matching' : ''})
+        </h2>
+        <FilterBar
+          filters={filters}
+          categories={categories}
+          onChange={setFilters}
+        />
         {isLoading ? (
           <p>Loading pantry items...</p>
         ) : (
           <ItemList
             items={items}
+            filtered={Boolean(filters.q || filters.category || filters.status)}
             onEdit={(item) => {
               setEditing(item)
               window.scrollTo({ top: 0, behavior: 'smooth' })
