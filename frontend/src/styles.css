@@ -218,6 +218,38 @@ button:disabled {
   color: var(--color-ink);
 }
 
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-bar input[type="search"] {
+  flex: 1 1 220px;
+}
+
+.filter-bar input[type="search"],
+.filter-bar select {
+  min-height: 42px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #cbd8cd;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.filter-bar .secondary {
+  min-height: 42px;
+  border-color: var(--color-border);
+  background: #fff;
+  color: var(--color-green);
+}
+
+.filter-bar .secondary:hover:not(:disabled) {
+  background: #f1f5f1;
+}
+
 .item-form__actions {
   display: flex;
   align-items: center;
