@@ -15,6 +15,32 @@ Most of us have thrown out food we forgot about in the back of the fridge. Waste
 - **Recipe suggestions:** recipes from [TheMealDB](https://www.themealdb.com/api.php) that use ingredients already in your pantry, with soon-to-expire items prioritized
 - **Shopping list:** built automatically from items that are running low or used up
 
+## Project Status
+
+**Current sprint:** Sprint 1 (MVP): pantry inventory, expiration tracking, and a first deployment.
+
+| Area | Jira | Story | Status | 
+|---|---|---|---| 
+| Inventory | PAN-4 | Add an item | ☐ |  
+| Inventory | PAN-5 | Edit an item | ☐ | 
+| Inventory | PAN-6 | Delete an item | ☐ |
+| Inventory | PAN-7 | Search and filter items | ☐ |  
+| Inventory | PAN-11 | Sort items by expuiration date | ☐ |  
+| Expiry | PAN-8 | Color-code items by expiration status | ☐ | 
+| Expiry | PAN-9 | "Use soon" list | ☐ | 
+| Expiry | PAN-10 | Flag expired items | ☐ | 
+| Infastructure | PAN-19 | Run the stack with docker-compose | ☐ |
+| Infastructure | PAN-21 | Deploy to Cloud Run + Cloud SQL (first attempt) | ☐ |     
+
+**Expiration rules:** expired (past date), use soon(3 days or less, set by 'USE_SOON_DAYS'), this week (7 days or less), fresh or no date.
+
+**Coming next:**
+-**Sprint 2:** recipe suggestions and the shopping list (PAN-12 to PAN-18)
+-**Sprint 3:** Github Actions CI/CD (PAN-20) and secrets management (PAN-22)
+
+
+
+
 
 ## Technology Stack (Planned)
  
