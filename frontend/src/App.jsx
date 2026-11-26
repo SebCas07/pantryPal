@@ -1,121 +1,178 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import {
+  createItem,
+  deleteItem,
+  getDashboard,
+  getItems,
+  updateItem,
+} from './api'
+import ItemForm from './components/ItemForm'
+import ItemList from './components/ItemList'
+
+const dashboardStatuses = [
+  ['expired', 'Expired'],
+  ['use_soon', 'Use soon'],
+  ['this_week', 'This week'],
+  ['fresh', 'Fresh'],
+  ['none', 'No expiration date'],
+]
+
+async function fetchPantryData() {
+  const [items, dashboard] = await Promise.all([getItems(), getDashboard()])
+  return { items, dashboard }
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [items, setItems] = useState([])
+  const [dashboard, setDashboard] = useState(null)
+  const [editingItem, setEditingItem] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchPantryData()
+      .then((data) => {
+        if (isMounted) {
+          setItems(data.items)
+          setDashboard(data.dashboard)
+        }
+      })
+      .catch((requestError) => {
+        if (isMounted) {
+          setError(requestError.message)
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  async function refreshPantry() {
+    const data = await fetchPantryData()
+    setItems(data.items)
+    setDashboard(data.dashboard)
+  }
+
+  async function handleSubmit(item) {
+    setIsSubmitting(true)
+    setError('')
+    setMessage('')
+
+    try {
+      if (editingItem) {
+        await updateItem(editingItem.id, item)
+        setMessage(`${item.name} was updated.`)
+      } else {
+        await createItem(item)
+        setMessage(`${item.name} was added.`)
+      }
+      await refreshPantry()
+      setEditingItem(null)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  async function handleDelete(itemId) {
+    const item = items.find((currentItem) => currentItem.id === itemId)
+    if (!item || !window.confirm(`Delete "${item.name}" from your pantry?`)) {
+      return
+    }
+
+    setIsSubmitting(true)
+    setError('')
+    setMessage('')
+
+    try {
+      await deleteItem(itemId)
+      await refreshPantry()
+      if (editingItem?.id === itemId) {
+        setEditingItem(null)
+      }
+      setMessage(`${item.name} was deleted.`)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  function handleCancelEdit() {
+    setEditingItem(null)
+    setError('')
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main className="pantry-app">
+      <header className="pantry-app__header">
+        <p className="pantry-app__eyebrow">PantryPal</p>
+        <h1>Your pantry, at a glance</h1>
+        <p>Keep track of what you have and use food before it expires.</p>
+      </header>
+
+      {error && (
+        <p className="pantry-app__error" role="alert">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p className="pantry-app__message" role="status">
+          {message}
+        </p>
+      )}
+
+      <section className="pantry-app__dashboard" aria-labelledby="dashboard-title">
+        <h2 id="dashboard-title">Expiration overview</h2>
+        {dashboard ? (
+          <dl className="pantry-app__stats">
+            {dashboardStatuses.map(([status, label]) => (
+              <div className={`pantry-app__stat pantry-app__stat--${status}`} key={status}>
+                <dt>{label}</dt>
+                <dd>{dashboard.counts[status]}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p>Loading expiration overview...</p>
+        )}
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+      <section className="pantry-app__form-section" aria-labelledby="form-title">
+        <h2 id="form-title">{editingItem ? 'Edit pantry item' : 'Add to your pantry'}</h2>
+        <ItemForm
+          key={editingItem?.id ?? 'new-item'}
+          initialItem={editingItem}
+          onSubmit={handleSubmit}
+          onCancel={editingItem ? handleCancelEdit : undefined}
+          isSubmitting={isSubmitting}
+        />
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <section className="pantry-app__items" aria-labelledby="items-title">
+        <h2 id="items-title">Pantry items</h2>
+        {isLoading ? (
+          <p>Loading pantry items...</p>
+        ) : (
+          <ItemList
+            items={items}
+            onEdit={setEditingItem}
+            onDelete={handleDelete}
+          />
+        )}
+      </section>
+    </main>
   )
 }
 
