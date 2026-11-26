@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react'
 import * as api from './api'
+import Dashboard from './components/Dashboard.jsx'
 import ItemForm from './components/ItemForm'
 import ItemList from './components/ItemList'
-
-const dashboardStatuses = [
-  ['expired', 'Expired'],
-  ['use_soon', 'Use soon'],
-  ['this_week', 'This week'],
-  ['fresh', 'Fresh'],
-  ['none', 'No expiration date'],
-]
 
 async function fetchPantryData() {
   const [items, dashboard, categories] = await Promise.all([
@@ -62,6 +55,7 @@ function App() {
     setItems(data.items)
     setDashboard(data.dashboard)
     setCategories(data.categories)
+    setError('')
   }
 
   async function handleSave(item) {
@@ -113,6 +107,8 @@ function App() {
         <p>Keep track of what you have and use food before it expires.</p>
       </header>
 
+      {dashboard && <Dashboard data={dashboard} />}
+
       {error && (
         <p className="pantry-app__error" role="alert">
           {error}
@@ -123,22 +119,6 @@ function App() {
           {message}
         </p>
       )}
-
-      <section className="pantry-app__dashboard" aria-labelledby="dashboard-title">
-        <h2 id="dashboard-title">Expiration overview</h2>
-        {dashboard ? (
-          <dl className="pantry-app__stats">
-            {dashboardStatuses.map(([status, label]) => (
-              <div className={`pantry-app__stat pantry-app__stat--${status}`} key={status}>
-                <dt>{label}</dt>
-                <dd>{dashboard.counts[status]}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : (
-          <p>Loading expiration overview...</p>
-        )}
-      </section>
 
       <section className="pantry-app__form-section" aria-labelledby="form-title">
         <h2 id="form-title">{editing ? `Edit ${editing.name}` : 'Add an item'}</h2>
