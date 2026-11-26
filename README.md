@@ -53,24 +53,27 @@ Most of us have thrown out food we forgot about in the back of the fridge. Waste
 - **Deployment:** Google Cloud Run, Cloud SQL
 - **AI Development Tools:** GitHub Copilot
 
-## Getting Started
- 
-> Setup instructions will be added as the project is built. The planned workflow:
- 
-1. Clone the repository:
-```bash
-git clone https://github.com/<your-username>/pantrypal.git
-cd pantrypal
-```
-2. Set up environment variables:
-```bash
-cp .env.example .env
-```
-3. Start the app with Docker:
+## Running with Docker
+
+### Start the app
+
+Install Docker Desktop with Docker Compose, then run these commands from the repository root:
+
 ```bash
 docker compose up --build
 ```
-4. Open the app at `http://localhost:3000`
+
+Open the website at [http://localhost:3000](http://localhost:3000). The API health check is available at [http://localhost:5000/api/health](http://localhost:5000/api/health).
+
+Press `Ctrl+C` in the Compose terminal to stop the services. Run `docker compose up` to start them again.
+
+### Docker notes
+
+- The frontend container serves the built React app with Nginx and forwards `/api` requests to the backend container.
+- The backend connects to the `db` Postgres service; Postgres data is kept in the named `postgres_data` volume across restarts.
+- `docker compose down` keeps the database volume. Avoid `docker compose down --volumes` if you want to keep your pantry data.
+- Tested on Windows with Docker Desktop.
+
 ## Screenshots
  
 _Coming soon._

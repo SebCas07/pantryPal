@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: pantrypal
+      POSTGRES_USER: pantrypal
+      POSTGRES_PASSWORD: pantrypal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pantrypal -d pantrypal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://pantrypal:pantrypal@db:5432/pantrypal
+      CORS_ORIGINS: http://localhost:3000
+      PORT: 8080
+    ports:
+      - "127.0.0.1:5000:8080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      API_UPSTREAM: http://backend:8080
+    ports:
+      - "127.0.0.1:3000:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
