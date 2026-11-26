@@ -1,11 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  createItem,
-  deleteItem,
-  getDashboard,
-  getItems,
-  updateItem,
-} from './api'
+import * as api from './api'
 import ItemForm from './components/ItemForm'
 import ItemList from './components/ItemList'
 
@@ -18,14 +12,19 @@ const dashboardStatuses = [
 ]
 
 async function fetchPantryData() {
-  const [items, dashboard] = await Promise.all([getItems(), getDashboard()])
-  return { items, dashboard }
+  const [items, dashboard, categories] = await Promise.all([
+    api.getItems(),
+    api.getDashboard(),
+    api.getCategories(),
+  ])
+  return { items, dashboard, categories }
 }
 
 function App() {
   const [items, setItems] = useState([])
   const [dashboard, setDashboard] = useState(null)
-  const [editingItem, setEditingItem] = useState(null)
+  const [categories, setCategories] = useState([])
+  const [editing, setEditing] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -39,6 +38,7 @@ function App() {
         if (isMounted) {
           setItems(data.items)
           setDashboard(data.dashboard)
+          setCategories(data.categories)
         }
       })
       .catch((requestError) => {
@@ -57,61 +57,33 @@ function App() {
     }
   }, [])
 
-  async function refreshPantry() {
+  async function refresh() {
     const data = await fetchPantryData()
     setItems(data.items)
     setDashboard(data.dashboard)
+    setCategories(data.categories)
   }
 
-  async function handleSubmit(item) {
+  async function handleSave(item) {
     setIsSubmitting(true)
     setError('')
     setMessage('')
 
     try {
-      if (editingItem) {
-        await updateItem(editingItem.id, item)
+      if (editing) {
+        await api.updateItem(editing.id, item)
+        setEditing(null)
         setMessage(`${item.name} was updated.`)
       } else {
-        await createItem(item)
+        await api.createItem(item)
         setMessage(`${item.name} was added.`)
       }
-      await refreshPantry()
-      setEditingItem(null)
+      await refresh()
     } catch (requestError) {
       setError(requestError.message)
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  async function handleDelete(itemId) {
-    const item = items.find((currentItem) => currentItem.id === itemId)
-    if (!item || !window.confirm(`Delete "${item.name}" from your pantry?`)) {
-      return
-    }
-
-    setIsSubmitting(true)
-    setError('')
-    setMessage('')
-
-    try {
-      await deleteItem(itemId)
-      await refreshPantry()
-      if (editingItem?.id === itemId) {
-        setEditingItem(null)
-      }
-      setMessage(`${item.name} was deleted.`)
-    } catch (requestError) {
-      setError(requestError.message)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  function handleCancelEdit() {
-    setEditingItem(null)
-    setError('')
   }
 
   return (
@@ -150,13 +122,15 @@ function App() {
       </section>
 
       <section className="pantry-app__form-section" aria-labelledby="form-title">
-        <h2 id="form-title">{editingItem ? 'Edit pantry item' : 'Add to your pantry'}</h2>
+        <h2 id="form-title">{editing ? `Edit ${editing.name}` : 'Add an item'}</h2>
         <ItemForm
-          key={editingItem?.id ?? 'new-item'}
-          initialItem={editingItem}
-          onSubmit={handleSubmit}
-          onCancel={editingItem ? handleCancelEdit : undefined}
+          key={editing?.id ?? 'new'}
+          categories={categories}
+          initial={editing}
+          onSave={handleSave}
+          onCancel={editing ? () => setEditing(null) : null}
           isSubmitting={isSubmitting}
+          error={error}
         />
       </section>
 
@@ -167,8 +141,10 @@ function App() {
         ) : (
           <ItemList
             items={items}
-            onEdit={setEditingItem}
-            onDelete={handleDelete}
+            onEdit={(item) => {
+              setEditing(item)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
           />
         )}
       </section>

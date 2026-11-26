@@ -43,7 +43,7 @@ export function createItem(item) {
 }
 
 export function updateItem(itemId, item) {
-  return request(`/items/${itemId}`, { method: "PUT", body: JSON.stringify(item)})
+  return request(`/items/${itemId}`, jsonRequest('PUT', item))
 }
 
 export function deleteItem(itemId) {
