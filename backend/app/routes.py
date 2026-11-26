@@ -26,14 +26,14 @@ def _validate(data, partial=False):
 
     if "quantity" in data or not partial: 
         try:
-            qty = float(data.get("quanitity", 1))
+            qty = float(data.get("quantity", 1))
             if qty < 0: 
                 raise ValueError
             clean["quantity"] = qty 
         except (TypeError, ValueError): 
             errors["quantity"] = "Quantity must be a number of 0 or more."
 
-    if "Unit" in data: 
+    if "unit" in data:
         clean["unit"] = (data.get("unit") or "").strip() or None
 
     if "category" in data or not partial: 
@@ -77,7 +77,7 @@ def create_item():
     if errors: 
         return jsonify(errors = errors), 400
     item = Item(**clean)
-    db.sessions.add(item)
+    db.session.add(item)
     db.session.commit()
     return jsonify(item.to_dict(_use_soon_days())), 201
 
