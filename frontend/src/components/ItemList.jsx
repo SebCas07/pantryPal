@@ -1,3 +1,5 @@
+import { STATUS_LABELS, expiryText } from './status.js'
+
 export default function ItemList({ items, onEdit, onDelete }) {
   if (items.length === 0) {
     return <p className="item-list__empty">Your pantry is empty.</p>
@@ -11,8 +13,7 @@ export default function ItemList({ items, onEdit, onDelete }) {
             <th scope="col">Name</th>
             <th scope="col">Quantity</th>
             <th scope="col">Category</th>
-            <th scope="col">Expiration date</th>
-            <th scope="col">Status</th>
+            <th scope="col">Expires</th>
             <th aria-label="Actions" />
           </tr>
         </thead>
@@ -25,12 +26,12 @@ export default function ItemList({ items, onEdit, onDelete }) {
                 {item.unit ? ` ${item.unit}` : ''}
               </td>
               <td>{item.category}</td>
-              <td>{item.expiration_date || 'No expiration date'}</td>
               <td>
                 <span
-                  className={`item-list__status item-list__status--${item.status}`}
+                  className={`pill ${item.status}`}
+                  title={STATUS_LABELS[item.status]}
                 >
-                  {item.status.replaceAll('_', ' ')}
+                  {expiryText(item)}
                 </span>
               </td>
               <td className="row-actions">
