@@ -73,3 +73,30 @@ def test_expiry_status_buckets():
     assert expiry_status(3) == "use_soon"
     assert expiry_status(5) == "this_week"
     assert expiry_status(8) == "fresh"
+
+
+def test_search_by_name_is_case_insensitive(client):
+    add(client, name="Whole Milk")
+    add(client, name="Oat milk")
+    add(client, name="Eggs")
+    names = {item["name"] for item in client.get("/api/items?q=MILK").get_json()}
+    assert names == {"Whole Milk", "Oat milk"}
+
+
+def test_filter_by_category(client):
+    add(client, name="Milk", category="dairy")
+    add(client, name="Apples", category="produce")
+    items = client.get("/api/items?category=produce").get_json()
+    assert [item["name"] for item in items] == ["Apples"]
+
+
+def test_filter_unknown_category_is_rejected(client):
+    assert client.get("/api/items?category=toys").status_code == 400
+
+
+def test_filter_by_status_and_combined(client):
+    add(client, name="Spinach", category="produce", expiration_date=days_from_now(1))
+    add(client, name="Carrots", category="produce", expiration_date=days_from_now(20))
+    add(client, name="Yogurt", category="dairy", expiration_date=days_from_now(1))
+    items = client.get("/api/items?status=use_soon&category=produce").get_json()
+    assert [item["name"] for item in items] == ["Spinach"]
