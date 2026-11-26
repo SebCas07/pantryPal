@@ -1,24 +1,19 @@
 import { useState } from 'react'
 
-const categories = [
-  'produce',
-  'dairy',
-  'meat',
-  'grains',
-  'canned',
-  'frozen',
-  'snacks',
-  'drinks',
-  'other',
-]
-
-function ItemForm({ initialItem, onSubmit, onCancel, isSubmitting = false, error }) {
+function ItemForm({
+  categories = [],
+  initial,
+  onSave,
+  onCancel,
+  isSubmitting = false,
+  error,
+}) {
   const [form, setForm] = useState({
-    name: initialItem?.name ?? '',
-    quantity: initialItem?.quantity ?? 1,
-    unit: initialItem?.unit ?? '',
-    category: initialItem?.category ?? 'other',
-    expiration_date: initialItem?.expiration_date ?? '',
+    name: initial?.name ?? '',
+    quantity: initial?.quantity ?? 1,
+    unit: initial?.unit ?? '',
+    category: initial?.category ?? categories[0] ?? 'other',
+    expiration_date: initial?.expiration_date ?? '',
   })
 
   function handleChange(event) {
@@ -28,7 +23,7 @@ function ItemForm({ initialItem, onSubmit, onCancel, isSubmitting = false, error
 
   function handleSubmit(event) {
     event.preventDefault()
-    onSubmit({
+    onSave({
       ...form,
       quantity: Number(form.quantity),
       unit: form.unit.trim() || null,
@@ -97,7 +92,7 @@ function ItemForm({ initialItem, onSubmit, onCancel, isSubmitting = false, error
 
       <div className="item-form__actions">
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : initialItem ? 'Save changes' : 'Add item'}
+          {isSubmitting ? 'Saving...' : initial ? 'Save changes' : 'Add item'}
         </button>
         {onCancel && (
           <button type="button" onClick={onCancel} disabled={isSubmitting}>

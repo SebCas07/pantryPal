@@ -242,25 +242,17 @@ button:disabled {
   color: #2f6848;
 }
 
-.item-list__actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.item-list__actions button {
+.row-actions .secondary {
   min-height: 34px;
   padding: 0.35rem 0.65rem;
+  border-color: var(--color-border);
+  background: #fff;
+  color: var(--color-green);
   font-size: 0.85rem;
 }
 
-.item-list__actions button:last-child:not(:first-child) {
-  border-color: #e3c9c7;
-  background: #fff;
-  color: var(--color-danger);
-}
-
-.item-list__actions button:last-child:not(:first-child):hover {
-  background: #fff2f1;
+.row-actions .secondary:hover:not(:disabled) {
+  background: #f1f5f1;
 }
 
 .item-list__empty {
