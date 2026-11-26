@@ -1,4 +1,4 @@
-const statusLabels = {
+export const STATUS_LABELS = {
   expired: 'Expired',
   use_soon: 'Use soon',
   this_week: 'This week',
@@ -7,7 +7,7 @@ const statusLabels = {
 }
 
 export function statusLabel(status) {
-  return statusLabels[status] ?? status
+  return STATUS_LABELS[status] ?? status
 }
 
 export function daysText(days) {
@@ -28,4 +28,8 @@ export function daysText(days) {
   }
 
   return `In ${days} ${days === 1 ? 'day' : 'days'}`
+}
+
+export function expiryText(item) {
+  return daysText(item.days_until_expiry)
 }
