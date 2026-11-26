@@ -121,39 +121,47 @@ button:disabled {
 
 .tiles {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
 }
 
 .tile {
-  display: grid;
-  align-content: start;
-  gap: 0.35rem;
-  padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  background: #f8faf7;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  border-top: 4px solid currentColor;
+  background: #fafaf8;
 }
 
 .tile-count {
-  color: var(--color-ink);
-  font-size: 1.8rem;
-  font-weight: 750;
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 .tile-label {
-  color: var(--color-muted);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
+  color: #6b716d;
 }
 
 .tile.expired {
-  border-color: #e7b9b6;
-  background: #fff3f2;
+  color: #b3261e;
 }
 
 .tile.use_soon {
-  border-color: #eed4ad;
-  background: #fff8eb;
+  color: #c77700;
+}
+
+.tile.this_week {
+  color: #b59a00;
+}
+
+.tile.fresh {
+  color: #2f6f4f;
+}
+
+.tile.none {
+  color: #7a7f7c;
 }
 
 .banner.error {
