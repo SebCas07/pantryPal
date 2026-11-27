@@ -2,6 +2,10 @@
 
 PantryPal is a web app that helps people keep track of the food in their ktichen. Users log grocieries with quantities and expiration dates, see what's about to expire, get recipe ideas that use what they already have, and build a shopping list autmatically. 
 
+**Live app:** https://pantrypal-web-670254981113.us-central1.run.app
+
+**API health:** https://pantrypal-api-670254981113.us-central1.run.app/api/health
+
 ## Why PantryPal? 
 
 Most of us have thrown out food we forgot about in the back of the fridge. Waster food is wasted money, especially on a student budget. PantryPal shows what's about to expire so it gets used in time, and it helps you avoid buying things you already have. 
@@ -79,6 +83,21 @@ Press `Ctrl+C` in the Compose terminal to stop the services. Run `docker compose
 _Coming soon._
  
 ## AI Integration
- 
-This project is built with GitHub Copilot as the primary coding assistant. Details on how AI tools were used during development will be added here as the project progresses.
+
+AI helped scaffold the project and generate focused implementations, then I reviewed and tested each change.
+
+```python
+status = (request.args.get("status") or "").strip()
+if status:
+    results = [item for item in results if item["status"] == status]
+```
+
+```nginx
+location /api/ {
+    proxy_pass ${API_UPSTREAM};
+    proxy_ssl_server_name on;
+}
+```
+
+The nginx `Host $host` header was removed because it caused `/api` requests to loop back to the frontend on Cloud Run. See [AI usage notes](docs/AI_USAGE.md) for examples of where AI-generated code was kept, corrected, and verified.
  
