@@ -2,6 +2,10 @@
 
 PantryPal is a web app that helps people keep track of the food in their ktichen. Users log grocieries with quantities and expiration dates, see what's about to expire, get recipe ideas that use what they already have, and build a shopping list autmatically. 
 
+**Live app:** https://pantrypal-web-670254981113.us-central1.run.app
+
+**API health:** https://pantrypal-api-670254981113.us-central1.run.app/api/health
+
 ## Why PantryPal? 
 
 Most of us have thrown out food we forgot about in the back of the fridge. Waster food is wasted money, especially on a student budget. PantryPal shows what's about to expire so it gets used in time, and it helps you avoid buying things you already have. 
