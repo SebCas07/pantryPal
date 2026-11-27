@@ -83,6 +83,21 @@ Press `Ctrl+C` in the Compose terminal to stop the services. Run `docker compose
 _Coming soon._
  
 ## AI Integration
- 
-This project is built with GitHub Copilot as the primary coding assistant. Details on how AI tools were used during development will be added here as the project progresses.
+
+AI helped scaffold the project and generate focused implementations, then I reviewed and tested each change.
+
+```python
+status = (request.args.get("status") or "").strip()
+if status:
+    results = [item for item in results if item["status"] == status]
+```
+
+```nginx
+location /api/ {
+    proxy_pass ${API_UPSTREAM};
+    proxy_ssl_server_name on;
+}
+```
+
+The nginx `Host $host` header was removed because it caused `/api` requests to loop back to the frontend on Cloud Run. See [AI usage notes](docs/AI_USAGE.md) for examples of where AI-generated code was kept, corrected, and verified.
  
